@@ -1,0 +1,17 @@
+version: 1
+components:
+  comp_guest_web_app:
+    name: Guest Web App
+    kind: web_ui
+  comp_staff_admin_app:
+    name: Staff Admin App
+    kind: web_ui
+  comp_booking_api:
+    name: Booking API
+    kind: api_service
+  comp_booking_worker:
+    name: Booking Worker
+    kind: worker
+  comp_relational_database:
+    name: Relational Database
+    kind: managed_service
