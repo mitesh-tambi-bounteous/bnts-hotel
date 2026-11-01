@@ -1,0 +1,38 @@
+components:
+  comp_booking_api:
+    mode: local
+    e2e_command: cd services/booking-api && gradle e2e
+    test_command: cd services/booking-api && gradle test
+    build_command: cd services/booking-api && gradle bootJar
+  comp_booking_worker:
+    mode: local
+    e2e_command: cd services/booking-worker && gradle e2e --no-daemon
+    test_command: cd services/booking-worker && gradle test --no-daemon
+    build_command: cd services/booking-worker && gradle build -x test --no-daemon
+    devloop_command: cd services/booking-worker && gradle test --no-daemon
+  comp_guest_web_app:
+    mode: local
+    e2e_command: cd apps/guest-web && pnpm e2e
+    test_command: cd apps/guest-web && pnpm test
+    build_command: cd apps/guest-web && pnpm build
+    devloop_command: cd apps/guest-web && pnpm devloop
+  comp_staff_admin_app:
+    mode: local
+    e2e_command: cd apps/staff-admin && pnpm e2e
+    test_command: cd apps/staff-admin && pnpm test
+    build_command: cd apps/staff-admin && pnpm build
+    devloop_command: cd apps/staff-admin && pnpm devloop
+commands:
+  test: (cd services/booking-api && gradle test) && (cd services/booking-worker &&
+    gradle test --no-daemon) && (cd apps/guest-web && pnpm test) && (cd apps/staff-admin
+    && pnpm test)
+  build: (cd services/booking-api && gradle bootJar) && (cd services/booking-worker
+    && gradle build -x test --no-daemon) && (cd apps/guest-web && pnpm build) && (cd
+    apps/staff-admin && pnpm build)
+  devloop: (cd services/booking-worker && gradle test --no-daemon) && (cd apps/guest-web
+    && pnpm devloop) && (cd apps/staff-admin && pnpm devloop)
+setup_command: (cd apps/guest-web && pnpm install --frozen-lockfile) && (cd apps/staff-admin
+  && pnpm install --frozen-lockfile)
+toolchain:
+  node: '22'
+  pnpm: 12.9.1
