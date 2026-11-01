@@ -1,0 +1,76 @@
+/**
+ * Do not edit directly, this file was auto-generated.
+ */
+
+:root {
+  --color-fg: #0f172a; /** Default text; matches slate-900 body text in layout.tsx */
+  --color-bg: #ffffff; /** Page background; matches bg-white in layout.tsx */
+  --color-fg-muted: #475569; /** Secondary text and hints */
+  --color-bg-subtle: #f1f5f9; /** Subtle surfaces, skeletons, hover */
+  --color-primary: #2563eb; /** Primary actions, focus ring, selected state */
+  --color-primary-hover: #1d4ed8; /** Primary hover */
+  --color-primary-fg: #ffffff; /** Text on primary or danger fills */
+  --color-border: #cbd5e1; /** Default borders and dividers */
+  --color-border-strong: #64748b; /** Form control borders */
+  --color-danger: #b91c1c; /** Destructive actions and errors */
+  --color-danger-bg: #fef2f2; /** Danger tint */
+  --color-success: #15803d; /** Success */
+  --color-success-bg: #f0fdf4; /** Success tint */
+  --color-warning: #92400e; /** Warning */
+  --color-warning-bg: #fffbeb; /** Warning tint */
+  --color-info: #1d4ed8; /** Info */
+  --color-info-bg: #eff6ff; /** Info tint */
+  --space-1: 4px; /** Spacing step 1 */
+  --space-2: 8px; /** Spacing step 2 */
+  --space-3: 16px; /** Spacing step 3 */
+  --space-4: 24px; /** Spacing step 4 */
+  --space-5: 32px; /** Spacing step 5 */
+  --space-6: 48px; /** Spacing step 6 */
+  --radius-sm: 4px; /** Small radius */
+  --radius-md: 8px; /** Medium radius */
+  --radius-lg: 16px; /** Large radius */
+  --radius-full: 9999px; /** Pill / circle */
+  --font-size-sm: 0.875rem; /** Small text */
+  --font-size-md: 1rem; /** Body text */
+  --font-size-lg: 1.25rem; /** Large text / headings */
+  --font-size-xl: 1.75rem; /** Page title */
+  --size-control: 2.5rem; /** Control height */
+  --size-control-sm: 2rem; /** Small control height */
+  --size-control-lg: 3rem; /** Large control height */
+  --size-icon: 1.25rem; /** Checkbox / radio size */
+  --size-avatar: 2.5rem; /** Avatar size */
+  --size-drawer: 360px; /** Drawer width */
+  --size-modal: 480px; /** Modal max width */
+  --size-menu: 200px; /** Menu min width */
+  --size-tooltip: 240px; /** Tooltip max width */
+  --size-content: 672px; /** Content max width (max-w-2xl in guest-web page.tsx) */
+  --size-grid-min: 200px; /** Grid column min width */
+  --border-width: 1px; /** Hairline border */
+  --border-width-strong: 2px; /** Focus / selected border */
+  --font-sans: ui-sans-serif, system-ui, sans-serif; /** Base font */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+  --line-height-base: 1.5;
+  --opacity-overlay: 0.5; /** Backdrop opacity */
+  --opacity-disabled: 0.5; /** Disabled opacity */
+  --z-popup: 50;
+  --z-overlay: 100;
+  --button-primary-background: var(--color-primary);
+  --button-primary-foreground: var(--color-primary-fg);
+  --button-primary-border: var(--color-primary);
+  --button-primary-hover: var(--color-primary-hover);
+  --button-secondary-background: var(--color-bg);
+  --button-secondary-foreground: var(--color-fg);
+  --button-secondary-border: var(--color-border-strong);
+  --button-danger-background: var(--color-danger);
+  --button-danger-foreground: var(--color-primary-fg);
+  --button-danger-border: var(--color-danger);
+  --button-default-radius: var(--radius-md);
+  --button-default-padding: var(--space-3);
+  --card-default-background: var(--color-bg);
+  --card-default-foreground: var(--color-fg);
+  --card-default-border: var(--color-border);
+  --card-default-radius: var(--radius-lg);
+  --card-default-padding: var(--space-4);
+}
