@@ -16,12 +16,14 @@ components:
     test_command: cd apps/guest-web && pnpm test
     build_command: cd apps/guest-web && pnpm build
     devloop_command: cd apps/guest-web && pnpm devloop
+    install_command: cd apps/guest-web && pnpm add {name}@{version}
   comp_staff_admin_app:
     mode: local
     e2e_command: cd apps/staff-admin && pnpm e2e
     test_command: cd apps/staff-admin && pnpm test
     build_command: cd apps/staff-admin && pnpm build
     devloop_command: cd apps/staff-admin && pnpm devloop
+    install_command: cd apps/staff-admin && pnpm add {name}@{version}
 commands:
   test: (cd services/booking-api && gradle test) && (cd services/booking-worker &&
     gradle test --no-daemon) && (cd apps/guest-web && pnpm test) && (cd apps/staff-admin
@@ -36,3 +38,5 @@ setup_command: (cd apps/guest-web && pnpm install --frozen-lockfile) && (cd apps
 toolchain:
   node: '22'
   pnpm: 12.9.1
+package_install_commands:
+  pnpm: pnpm add {name}@{version}
