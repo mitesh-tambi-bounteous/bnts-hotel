@@ -1,0 +1,13 @@
+{
+  "firstName": "Asha",
+  "reference": "HB-7K2M9Q",
+  "hotelName": "Harbour View Mumbai",
+  "checkIn": "2026-12-12",
+  "checkOut": "2026-12-14",
+  "nights": 2,
+  "rooms": [
+    { "name": "Deluxe sea-facing room", "amountPaise": 1560000 },
+    { "name": "Executive room", "amountPaise": 1920000 }
+  ],
+  "totalPaise": 3480000
+}
