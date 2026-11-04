@@ -4,13 +4,23 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Guest Web",
-  description: "Hotel guest web app",
+  description: "Search, choose a room and book",
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
-      <body className="min-h-screen bg-white text-slate-900">{children}</body>
+      <body>
+        <div className="shell">
+          <header className="shell-header">
+            <a className="shell-brand" href="/">
+              Guest Web
+            </a>
+          </header>
+          <main className="shell-main">{children}</main>
+          <footer className="shell-footer">Hotel guest web app</footer>
+        </div>
+      </body>
     </html>
   );
 }

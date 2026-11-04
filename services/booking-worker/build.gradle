@@ -29,12 +29,16 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'software.amazon.awssdk:sesv2:2.29.52'
+    runtimeOnly 'org.postgresql:postgresql'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     e2eTestImplementation 'org.springframework.boot:spring-boot-starter-test'
     e2eTestImplementation 'org.testcontainers:junit-jupiter:1.20.4'
+    e2eTestImplementation 'org.testcontainers:postgresql:1.20.4'
     e2eTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
