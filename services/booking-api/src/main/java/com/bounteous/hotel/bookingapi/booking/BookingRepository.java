@@ -48,6 +48,24 @@ public class BookingRepository {
                 amountPaise);
     }
 
+    /** What is already recorded for a provider payment id: its status and the booking it paid for, if any. */
+    public record PaymentRecord(String status, String bookingReference, boolean accountCreated, String email) {}
+
+    public Optional<PaymentRecord> findPayment(String providerRef) {
+        return jdbc.query(
+                        "SELECT p.status, b.reference, b.account_created, a.email FROM payment p "
+                                + "LEFT JOIN booking b ON b.payment_id = p.id "
+                                + "LEFT JOIN guest_account a ON a.id = b.account_id WHERE p.provider_ref = ?",
+                        (rs, i) -> new PaymentRecord(
+                                rs.getString("status"),
+                                rs.getString("reference"),
+                                rs.getBoolean("account_created"),
+                                rs.getString("email")),
+                        providerRef)
+                .stream()
+                .findFirst();
+    }
+
     /** Provider refs of CAPTURED payments older than the cutoff that no booking uses. */
     public List<String> findOrphanedPayments(Instant olderThan) {
         return jdbc.queryForList(

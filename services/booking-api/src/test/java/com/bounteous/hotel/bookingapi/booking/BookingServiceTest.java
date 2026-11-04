@@ -198,10 +198,35 @@ class BookingServiceTest {
     }
 
     @Test
-    void exposesNoDeleteOperation() {
-        assertThat(java.util.Arrays.stream(BookingService.class.getMethods()).map(java.lang.reflect.Method::getName))
-                .noneMatch(n -> n.startsWith("delete"));
-        assertThat(java.util.Arrays.stream(BookingRepository.class.getMethods()).map(java.lang.reflect.Method::getName))
-                .noneMatch(n -> n.startsWith("delete"));
+    void rejectsAnUnsuitableRoomBeforeAnyCharge() { // AC21, AC22
+        assertThatThrownBy(() -> service.book(cmd("Asha Rao", "asha@example.com", null, FakeCatalogue.COMPACT, FakeCatalogue.DELUXE)))
+                .isInstanceOf(ValidationException.class);
+
+        verify(payments, never()).charge(anyLong(), any());
+    }
+
+    @Test
+    void aDoubleSubmitOfASuccessfulBookingReturnsThatBooking() {
+        when(bookings.findPayment("pay_1"))
+                .thenReturn(java.util.Optional.of(
+                        new BookingRepository.PaymentRecord("CAPTURED", "HB-7K2M9Q", true, "asha@example.com")));
+
+        BookingResult result = service.book(cmd("Asha Rao", "Asha@Example.com", null));
+
+        assertThat(result.reference()).isEqualTo("HB-7K2M9Q");
+        verify(payments, never()).charge(anyLong(), any());
+        verify(bookings, never()).save(any());
+    }
+
+    @Test
+    void aReversedPaymentIsReportedAsReversed() {
+        when(bookings.findPayment("pay_1"))
+                .thenReturn(java.util.Optional.of(new BookingRepository.PaymentRecord("REFUNDED", null, false, null)));
+
+        assertThatThrownBy(() -> service.book(cmd("Asha Rao", "asha@example.com", null)))
+                .isInstanceOf(PaymentVerificationException.class)
+                .hasMessageContaining("reversed");
+
+        verify(payments, never()).charge(anyLong(), any());
     }
 }

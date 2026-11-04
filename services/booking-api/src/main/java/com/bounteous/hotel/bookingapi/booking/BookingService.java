@@ -2,6 +2,7 @@ package com.bounteous.hotel.bookingapi.booking;
 
 import com.bounteous.hotel.bookingapi.account.GuestAccountRepository;
 import com.bounteous.hotel.bookingapi.account.GuestAccountRepository.AccountRef;
+import com.bounteous.hotel.bookingapi.booking.BookingRepository.PaymentRecord;
 import com.bounteous.hotel.bookingapi.booking.StayPricer.Quote;
 import com.bounteous.hotel.bookingapi.catalogue.RoomType;
 import com.bounteous.hotel.bookingapi.email.ConfirmationEmailPayload;
@@ -54,6 +55,10 @@ public class BookingService {
 
     public BookingResult book(CheckoutCommand cmd) {
         validate(cmd);
+        BookingResult replay = replayOf(cmd);
+        if (replay != null) {
+            return replay;
+        }
         Quote quote = pricer.price(cmd.hotelId(), cmd.checkIn(), cmd.checkOut(), cmd.guests(), cmd.roomTypeIds());
 
         String paymentId = payments.charge(quote.totalPaise(), cmd.proof());
@@ -75,6 +80,27 @@ public class BookingService {
         } catch (RuntimeException e) {
             throw failAfterCharge(paymentId, e);
         }
+    }
+
+    /**
+     * A payment id we have already seen: a double-submit of a booking that succeeded returns that
+     * booking (only to the same email), a reversed payment says so, and anything else is refused.
+     */
+    private BookingResult replayOf(CheckoutCommand cmd) {
+        if (cmd.proof() == null || cmd.proof().paymentId() == null) {
+            return null;
+        }
+        PaymentRecord prior = bookings.findPayment(cmd.proof().paymentId()).orElse(null);
+        if (prior == null) {
+            return null;
+        }
+        if (prior.bookingReference() != null && normaliseEmail(cmd.email()).equals(prior.email())) {
+            return new BookingResult(prior.bookingReference(), prior.accountCreated());
+        }
+        if ("REFUNDED".equals(prior.status())) {
+            throw new PaymentVerificationException("This payment was reversed. Please choose your rooms and pay again");
+        }
+        throw new PaymentVerificationException("This payment has already been used");
     }
 
     private BookingResult save(CheckoutCommand cmd, Quote quote, long paymentRowId) {

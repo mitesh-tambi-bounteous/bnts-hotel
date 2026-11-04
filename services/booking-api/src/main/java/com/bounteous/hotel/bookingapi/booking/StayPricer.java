@@ -3,6 +3,7 @@ package com.bounteous.hotel.bookingapi.booking;
 import com.bounteous.hotel.bookingapi.catalogue.CatalogueReader;
 import com.bounteous.hotel.bookingapi.catalogue.Hotel;
 import com.bounteous.hotel.bookingapi.catalogue.RoomType;
+import com.bounteous.hotel.bookingapi.search.RoomSuitability;
 import com.bounteous.hotel.bookingapi.search.SearchQuery;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -44,11 +45,17 @@ public class StayPricer {
             if (room == null) {
                 throw new ValidationException(Map.of("roomTypeIds", "Choose rooms from this hotel"));
             }
+            if (!RoomSuitability.suits(room, guests, roomTypeIds.size())) {
+                throw new ValidationException(Map.of("roomTypeIds", RoomSuitability.unsuitableReason(room, guests, roomTypeIds.size())));
+            }
             if (wanted.merge(id, 1, Integer::sum) > free.getOrDefault(id, 0)) {
                 throw new RoomUnavailableException(id);
             }
             rooms.add(room);
             total += room.pricePerNightPaise() * nights;
+        }
+        if (rooms.stream().mapToInt(RoomType::sleeps).sum() < guests) {
+            throw new ValidationException(Map.of("roomTypeIds", "The selected rooms don't sleep all your guests"));
         }
         return new Quote(hotel, nights, rooms, total);
     }
