@@ -8,8 +8,9 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.env.Profiles;
 
 /**
- * Picks the payment gateway from the environment. Blank Razorpay keys fall back to the in-memory
- * gateway (local/dev) except in the qa and prod profiles, where startup fails.
+ * Picks the payment gateway from the environment. Blank Razorpay keys fail startup unless
+ * {@code payments.in-memory=true} is set explicitly (local profile / tests); that is never
+ * honoured in the qa and prod profiles.
  */
 @Configuration
 public class ProviderConfig {
@@ -23,8 +24,10 @@ public class ProviderConfig {
         if (!keyId.isBlank() && !keySecret.isBlank()) {
             return new RazorpayPaymentGateway(new SdkRazorpayApi(keyId, keySecret), keyId, keySecret);
         }
-        if (env.acceptsProfiles(Profiles.of("qa", "prod"))) {
-            throw new IllegalStateException("RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set in qa and prod");
+        // Fail closed: the gateway that accepts any payment id must be asked for explicitly.
+        if (env.acceptsProfiles(Profiles.of("qa", "prod")) || !env.getProperty("payments.in-memory", Boolean.class, false)) {
+            throw new IllegalStateException(
+                    "RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET must be set (payments.in-memory=true is for local use only)");
         }
         log.warn("Razorpay keys are blank: using the in-memory payment gateway. No card is charged.");
         return new InMemoryPaymentGateway();

@@ -25,9 +25,24 @@ class ProviderConfigTest {
     }
 
     @Test
-    void blankKeysUseTheInMemoryGatewayOutsideQaAndProd() {
+    void blankKeysStopStartupWithNoProfileOrAnUnknownOne() {
         runner.withPropertyValues("razorpay.key-id=", "razorpay.key-secret=")
+                .run(ctx -> assertThat(ctx).hasFailed());
+        runner.withPropertyValues("spring.profiles.active=prd", "razorpay.key-id=", "razorpay.key-secret=")
+                .run(ctx -> assertThat(ctx).hasFailed());
+    }
+
+    @Test
+    void theInMemoryGatewayNeedsAnExplicitOptIn() {
+        runner.withPropertyValues("payments.in-memory=true", "razorpay.key-id=", "razorpay.key-secret=")
                 .run(ctx -> assertThat(ctx).hasSingleBean(InMemoryPaymentGateway.class));
+    }
+
+    @Test
+    void theOptInIsIgnoredInProd() {
+        runner.withPropertyValues(
+                        "spring.profiles.active=prod", "payments.in-memory=true", "razorpay.key-id=", "razorpay.key-secret=")
+                .run(ctx -> assertThat(ctx).hasFailed());
     }
 
     @Test

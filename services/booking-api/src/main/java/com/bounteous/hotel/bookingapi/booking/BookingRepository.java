@@ -2,6 +2,8 @@ package com.bounteous.hotel.bookingapi.booking;
 
 import com.bounteous.hotel.bookingapi.catalogue.RoomType;
 import java.sql.Date;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -44,6 +46,15 @@ public class BookingRepository {
                 Long.class,
                 providerRef,
                 amountPaise);
+    }
+
+    /** Provider refs of CAPTURED payments older than the cutoff that no booking uses. */
+    public List<String> findOrphanedPayments(Instant olderThan) {
+        return jdbc.queryForList(
+                "SELECT p.provider_ref FROM payment p WHERE p.status = 'CAPTURED' AND p.created_at < ? "
+                        + "AND NOT EXISTS (SELECT 1 FROM booking b WHERE b.payment_id = p.id) ORDER BY p.id",
+                String.class,
+                Timestamp.from(olderThan));
     }
 
     public void markPaymentRefunded(String providerRef) {

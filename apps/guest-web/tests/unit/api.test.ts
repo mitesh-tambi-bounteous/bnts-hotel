@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { ApiError, createBooking, getHotel, searchHotels } from "@/lib/api";
+import { ApiError, createBooking, getBooking, getHotel, searchHotels } from "@/lib/api";
 
 function respond(status: number, body: unknown) {
   return vi.fn().mockResolvedValue(new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } }));
@@ -31,6 +31,15 @@ describe("api client", () => {
     await getHotel(1, stay);
 
     expect(String(fetchMock.mock.calls[0][0])).toContain("/hotels/1?");
+  });
+
+  it("asks for a booking with the email it was made with", async () => {
+    const fetchMock = respond(200, { reference: "HB-7K2M9Q" });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await getBooking("HB-7K2M9Q", "a+b@example.com");
+
+    expect(String(fetchMock.mock.calls[0][0])).toContain("/bookings/HB-7K2M9Q?email=a%2Bb%40example.com");
   });
 
   it("turns an error body into an ApiError carrying its code", async () => {

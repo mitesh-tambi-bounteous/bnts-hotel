@@ -60,6 +60,7 @@ class BookingFlowE2ETest {
         registry.add("spring.datasource.url", postgres::getJdbcUrl);
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("payments.in-memory", () -> "true");
     }
 
     @LocalServerPort int port;
@@ -74,6 +75,8 @@ class BookingFlowE2ETest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        // Every test starts from an empty database: assertions below count absolute rows.
+        jdbc.execute("TRUNCATE booking_room, booking, payment, email_outbox, guest_account, room_inventory CASCADE");
         runLoader();
     }
 
@@ -160,9 +163,19 @@ class BookingFlowE2ETest {
                 .then().statusCode(201).body("accountCreated", is(false)).extract().path("reference");
 
         assertThat(jdbc.queryForObject("SELECT count(*) FROM guest_account", Integer.class)).isEqualTo(1);
-        given().get("/bookings/{ref}", reference).then().statusCode(200)
+        given().queryParam("email", "PRIYA@example.com").get("/bookings/{ref}", reference).then().statusCode(200)
                 .body("reference", is(reference)).body("email", is("priya@example.com"))
                 .body("rooms.size()", is(1));
+    }
+
+    @Test
+    void aBookingCanOnlyBeReadWithTheEmailItWasMadeWith() {
+        String reference = book(checkout("Asha Rao", "owner@example.com", "pay_owner", HARBOUR, DELUXE))
+                .then().statusCode(201).extract().path("reference");
+
+        given().get("/bookings/{ref}", reference).then().statusCode(404);
+        given().queryParam("email", "other@example.com").get("/bookings/{ref}", reference).then().statusCode(404);
+        given().queryParam("email", "other@example.com").get("/bookings/{ref}", "HB-NOSUCH").then().statusCode(404);
     }
 
     @Test

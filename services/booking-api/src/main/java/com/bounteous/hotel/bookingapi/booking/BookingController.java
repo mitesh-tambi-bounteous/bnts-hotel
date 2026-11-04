@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -55,7 +56,11 @@ public class BookingController {
     }
 
     @GetMapping("/bookings/{reference}")
-    public BookingView get(@PathVariable String reference) {
-        return bookings.findByReference(reference).orElseThrow(() -> new NotFoundException("Booking not found"));
+    public BookingView get(@PathVariable String reference, @RequestParam(required = false) String email) {
+        // Proof of ownership: the booking email must come with the reference. A wrong or missing
+        // email looks exactly like an unknown reference, so references cannot be probed.
+        return bookings.findByReference(reference)
+                .filter(view -> email != null && view.email().equalsIgnoreCase(email.trim()))
+                .orElseThrow(() -> new NotFoundException("Booking not found"));
     }
 }

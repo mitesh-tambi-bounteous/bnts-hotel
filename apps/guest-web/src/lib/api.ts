@@ -117,6 +117,7 @@ export function createBooking(booking: BookingRequest): Promise<BookingResult> {
   return post("/bookings", booking);
 }
 
-export function getBooking(reference: string): Promise<BookingView> {
-  return request(`/bookings/${encodeURIComponent(reference)}`);
+/** The API shows a booking only together with the email it was made with. */
+export function getBooking(reference: string, email: string): Promise<BookingView> {
+  return request(`/bookings/${encodeURIComponent(reference)}?email=${encodeURIComponent(email)}`);
 }

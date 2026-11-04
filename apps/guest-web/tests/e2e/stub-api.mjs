@@ -114,7 +114,12 @@ const server = createServer(async (req, res) => {
     return json(res, 201, { reference: lastBooking.reference, accountCreated: lastBooking.accountCreated });
   }
 
-  if (req.method === "GET" && url.pathname === "/bookings/HB-7K2M9Q" && lastBooking) {
+  if (
+    req.method === "GET" &&
+    url.pathname === "/bookings/HB-7K2M9Q" &&
+    lastBooking &&
+    url.searchParams.get("email")?.toLowerCase() === lastBooking.email
+  ) {
     return json(res, 200, lastBooking);
   }
 

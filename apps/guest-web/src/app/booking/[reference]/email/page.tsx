@@ -1,12 +1,7 @@
-import { notFound } from "next/navigation";
 import { EmailPreview } from "@/components/email-preview";
-import { ApiError, getBooking } from "@/lib/api";
+import { loadBooking } from "@/lib/load-booking";
 
 export default async function BookingEmailPage({ params }: { params: Promise<{ reference: string }> }) {
   const { reference } = await params;
-  const booking = await getBooking(reference).catch((error) => {
-    if (error instanceof ApiError && error.status === 404) notFound();
-    throw error;
-  });
-  return <EmailPreview booking={booking} />;
+  return <EmailPreview booking={await loadBooking(reference)} />;
 }
